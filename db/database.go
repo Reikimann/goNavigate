@@ -63,6 +63,7 @@ func InitDB() {
   log.Println("Directory database created!")
 }
 
+
 func AddDirectories(paths []string, recurse bool) error {
   tx, err := database.Begin()
   if err != nil {
