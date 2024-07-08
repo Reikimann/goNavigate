@@ -8,5 +8,5 @@ This program needs `gcc` to be built. It also the `CGO_ENABLED=1` environment va
 
 The following command will install the program binary into to your `GOPATH/bin` or `GOBIN` directory.
 ```sh
-go install github.com/reikimann/goNavigate
+go install github.com/Reikimann/goNavigate
 ```
