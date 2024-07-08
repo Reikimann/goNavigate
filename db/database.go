@@ -8,6 +8,7 @@ import (
 
   "github.com/adrg/xdg"
   _ "github.com/mattn/go-sqlite3"
+  "github.com/mattn/go-sqlite3"
 )
 
 var database *sql.DB
@@ -74,16 +75,19 @@ func AddDirectories(paths []string, recurse bool) error {
     err = tx.Commit()
   }()
 
-  stmt, err := tx.Prepare("INSERT OR IGNORE INTO directories(path, recurse) VALUES(?,?)")
+  stmt, err := tx.Prepare("INSERT INTO directories(path, recurse) VALUES(?,?)")
   if err != nil {
     return err
   }
   defer stmt.Close()
 
-  // TODO: What if the recurse isn't passed? will it fail?
   for _, p := range paths {
     _, err = stmt.Exec(p, recurse)
     if err != nil {
+      if sqliteErr, ok := err.(sqlite3.Error); ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+        log.Printf("Path %s already exists in the database.", p)
+        continue
+      }
       return err
     }
   }

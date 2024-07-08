@@ -11,13 +11,6 @@ import (
   "github.com/spf13/cobra"
 )
 
-// TODO: Remove this function
-func printDir (dir []string) {
-  for _, v := range dir {
-    fmt.Println(v)
-  }
-}
-
 // Null value makes this default to false
 var recurse bool
 
@@ -26,12 +19,11 @@ var addCmd = &cobra.Command{
   Short: "Adds a directory to the list of directories",
   Args: cobra.MinimumNArgs(1),
   Run: func(cmd *cobra.Command, args []string) {
-    printDir(args)
     err := db.AddDirectories(args, recurse)
     if err != nil {
       log.Fatalf("Failed to add directories: %v", err)
     }
-    log.Printf("Directories added successfully: %v", args)
+    fmt.Println("Directories added successfully.")
   },
 }
 
