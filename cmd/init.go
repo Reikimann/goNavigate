@@ -4,7 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-  "github.com/reikimann/goNavigate/db"
+  "github.com/Reikimann/goNavigate/db"
   "github.com/spf13/cobra"
 )
 

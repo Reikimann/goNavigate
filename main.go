@@ -6,8 +6,8 @@ package main
 import (
   "log"
 
-  "github.com/reikimann/goNavigate/cmd"
-  "github.com/reikimann/goNavigate/db"
+  "github.com/Reikimann/goNavigate/cmd"
+  "github.com/Reikimann/goNavigate/db"
 )
 
 func main() {

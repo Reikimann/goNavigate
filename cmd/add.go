@@ -7,7 +7,7 @@ import (
   "fmt"
   "log"
 
-  "github.com/reikimann/goNavigate/db"
+  "github.com/Reikimann/goNavigate/db"
   "github.com/spf13/cobra"
 )
 
