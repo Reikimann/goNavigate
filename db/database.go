@@ -1,3 +1,6 @@
+/*
+Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+*/
 package db
 
 import (
@@ -7,8 +10,8 @@ import (
   "path/filepath"
 
   "github.com/adrg/xdg"
-  _ "github.com/mattn/go-sqlite3"
   "github.com/mattn/go-sqlite3"
+  _ "github.com/mattn/go-sqlite3"
 )
 
 var database *sql.DB
@@ -82,6 +85,21 @@ func AddDirectories(paths []string, recurse bool) error {
   defer stmt.Close()
 
   for _, p := range paths {
+
+    // Gets the absolute file path from input
+    p, err = filepath.Abs(p)
+    if err != nil {
+      log.Fatal(err)
+    }
+
+    // Checks if the file exists
+    _, err = os.Stat(p)
+    if err != nil {
+      log.Printf("Path %s doesn't exist.", p)
+      continue
+    }
+
+    // If the filepath exists, then commit to db.
     _, err = stmt.Exec(p, recurse)
     if err != nil {
       if sqliteErr, ok := err.(sqlite3.Error); ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
