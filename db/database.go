@@ -113,3 +113,26 @@ func AddDirectories(paths []string, recurse bool) error {
 
   return nil
 }
+
+func ListDirectories() ([]Directory, error) {
+  row, err := database.Query("SELECT path, recurse, last_navigation, times_navigated FROM directories")
+  if err != nil {
+    return nil, err
+  }
+  defer row.Close()
+
+  var directories []Directory
+
+  for row.Next() {
+    var directory Directory
+
+    err := row.Scan(&directory.Path, &directory.Recurse, &directory.LastNavigation, &directory.TimesNavigated)
+    if err != nil {
+      return nil, err
+    }
+
+    directories = append(directories, directory)
+  }
+
+  return directories, nil
+}
