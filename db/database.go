@@ -7,6 +7,8 @@ import (
   "database/sql"
   "log"
   "os"
+  "fmt"
+  // "time"
   "path/filepath"
 
   "github.com/adrg/xdg"
@@ -14,16 +16,21 @@ import (
   _ "github.com/mattn/go-sqlite3"
 )
 
-var database *sql.DB
-
 type Directory struct {
-  Path string
-  Recurse bool
-  LastNavigation int64
-  TimesNavigated int
+  ID             uint
+  Path           string
+  Recurse        bool
+  LastNavigation uint64
+  // LastNavigation time.Time
+  TimesNavigated uint
 }
 
-func OpenDatabase() error {
+type dirDB struct {
+  Database *sql.DB
+  DataDir  string
+}
+
+func setupDataPath() string {
   // TODO: Add an environment variable to load other database locations
   // or use a config file (use also viper?)
   // This shall be prioritized over xdg.DataHome
@@ -34,18 +41,23 @@ func OpenDatabase() error {
     log.Fatal(err)
   }
 
-  dbPath := filepath.Join(dataDir, "goNavigate.db")
+  return dataDir
+}
 
-  database, err = sql.Open("sqlite3", dbPath)
+func OpenDatabase() (*dirDB, error) {
+  dataPath := setupDataPath()
+
+  database, err := sql.Open("sqlite3", filepath.Join(dataPath, "goNavigate.db"))
   if err != nil {
-    log.Fatal(err)
+    return nil, err
   }
+  db := dirDB{database, dataPath}
 
-  return database.Ping()
+  return &db, nil
 }
 
 
-func InitDB() {
+func (d *dirDB) InitDB() {
   initStatement := `
   CREATE TABLE IF NOT EXISTS directories (
     id INTEGER PRIMARY KEY,
@@ -55,7 +67,7 @@ func InitDB() {
     times_navigated INTEGER DEFAULT 0
   );`
 
-  _, err := database.Exec(initStatement)
+  _, err := d.Database.Exec(initStatement)
   if err != nil {
     log.Fatalf("%q: %s\n", err, initStatement)
   }
@@ -64,8 +76,8 @@ func InitDB() {
 }
 
 
-func AddDirectories(paths []string, recurse bool) error {
-  tx, err := database.Begin()
+func (d *dirDB) AddDirectories(paths []string, recurse bool) error {
+  tx, err := d.Database.Begin()
   if err != nil {
     return err
   }
@@ -85,22 +97,8 @@ func AddDirectories(paths []string, recurse bool) error {
   }
   defer stmt.Close()
 
+  var pathsAdded uint
   for _, p := range paths {
-
-    // Gets the absolute file path from input
-    p, err = filepath.Abs(p)
-    if err != nil {
-      log.Fatal(err)
-    }
-
-    // Checks if the file exists
-    _, err = os.Stat(p)
-    if err != nil {
-      log.Printf("Path %s doesn't exist.", p)
-      continue
-    }
-
-    // If the filepath exists, then commit to db.
     _, err = stmt.Exec(p, recurse)
     if err != nil {
       if sqliteErr, ok := err.(sqlite3.Error); ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
@@ -109,13 +107,24 @@ func AddDirectories(paths []string, recurse bool) error {
       }
       return err
     }
+    pathsAdded++
+  }
+
+  // User feedback detailing the amount of added paths
+  switch pathsAdded {
+  case 0:
+    fmt.Println("No directories were added.")
+  case 1:
+    fmt.Println("One directory added successfully.")
+  default:
+    fmt.Println("Directories added successfully.")
   }
 
   return nil
 }
 
-func ListDirectories() ([]Directory, error) {
-  row, err := database.Query("SELECT path, recurse, last_navigation, times_navigated FROM directories")
+func (d *dirDB) ListDirectories() ([]Directory, error) {
+  row, err := d.Database.Query("SELECT * FROM directories")
   if err != nil {
     return nil, err
   }
@@ -126,7 +135,7 @@ func ListDirectories() ([]Directory, error) {
   for row.Next() {
     var directory Directory
 
-    err := row.Scan(&directory.Path, &directory.Recurse, &directory.LastNavigation, &directory.TimesNavigated)
+    err := row.Scan(&directory.ID, &directory.Path, &directory.Recurse, &directory.LastNavigation, &directory.TimesNavigated)
     if err != nil {
       return nil, err
     }
