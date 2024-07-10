@@ -4,12 +4,14 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-  "log"
-  "path/filepath"
-  "os"
-  "github.com/Reikimann/goNavigate/db"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 
-  "github.com/spf13/cobra"
+	"github.com/Reikimann/goNavigate/db"
+
+	"github.com/spf13/cobra"
 )
 
 // Null value makes this default to false
@@ -30,11 +32,17 @@ var addCmd = &cobra.Command{
       }
 
       // Checks if the file exists
-      _, err = os.Stat(p)
+      fileInfo, err := os.Stat(p)
       if err != nil {
-        log.Printf("Path %s doesn't exist.", p)
+        fmt.Printf("Path %s doesn't exist\n", p)
         continue
       }
+
+      if !fileInfo.IsDir() {
+        fmt.Printf("%s is not a directory\n", p)
+        continue
+      }
+
       paths = append(paths, p)
     }
 
