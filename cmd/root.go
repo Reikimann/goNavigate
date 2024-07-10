@@ -4,7 +4,11 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+  "fmt"
   "os"
+
+  "github.com/Reikimann/goNavigate/tui"
+  tea "github.com/charmbracelet/bubbletea"
 
   "github.com/spf13/cobra"
 )
@@ -16,10 +20,13 @@ var rootCmd = &cobra.Command{
   Long: `
 goNavigate is a CLI application, written in Go, that allows a user to add
 directories to a list and quickly navigate them using fuzzy search.`,
-
-  // Uncomment the following line if your bare application
-  // has an action associated with it:
-  // Run: func(cmd *cobra.Command, args []string) { },
+  Run: func(cmd *cobra.Command, args []string) {
+    p := tea.NewProgram(tui.NewModel())
+    if _, err := p.Run(); err != nil {
+      fmt.Printf("There has been an error: %v", err)
+      os.Exit(1)
+    }
+  },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

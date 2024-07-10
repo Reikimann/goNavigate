@@ -4,14 +4,14 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"path/filepath"
+  "fmt"
+  "log"
+  "os"
+  "path/filepath"
 
-	"github.com/Reikimann/goNavigate/db"
+  "github.com/Reikimann/goNavigate/db"
 
-	"github.com/spf13/cobra"
+  "github.com/spf13/cobra"
 )
 
 // Null value makes this default to false
