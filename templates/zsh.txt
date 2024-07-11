@@ -1,0 +1,17 @@
+# Jump to a directory using interactive search.
+function __goNavigate_g() {
+    \builtin local result
+    result="$(\command goNavigate)" && __goNavigate_cd "${result}"
+}
+
+# cd
+function __goNavigate_cd() {
+    # shellcheck disable=SC2164
+    \builtin cd -- "$@"
+}
+
+\builtin alias g=__goNavigate_g
+
+# To initialize goNavigate, add the following to your configuration (usually ~/.zshrc):
+#
+# eval "$(goNavigate init zsh)"

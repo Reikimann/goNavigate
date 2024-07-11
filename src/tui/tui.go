@@ -3,7 +3,7 @@ package tui
 import (
   "fmt"
 
-  "github.com/Reikimann/goNavigate/db"
+  "github.com/Reikimann/goNavigate/src/db"
   tea "github.com/charmbracelet/bubbletea"
 )
 

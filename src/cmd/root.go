@@ -7,7 +7,7 @@ import (
   "fmt"
   "os"
 
-  "github.com/Reikimann/goNavigate/tui"
+  "github.com/Reikimann/goNavigate/src/tui"
   tea "github.com/charmbracelet/bubbletea"
 
   "github.com/spf13/cobra"

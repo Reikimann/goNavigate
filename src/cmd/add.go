@@ -9,7 +9,7 @@ import (
   "os"
   "path/filepath"
 
-  "github.com/Reikimann/goNavigate/db"
+  "github.com/Reikimann/goNavigate/src/db"
 
   "github.com/spf13/cobra"
 )
