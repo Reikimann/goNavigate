@@ -7,8 +7,8 @@ import (
   tea "github.com/charmbracelet/bubbletea"
 )
 
-// Program model/state
-type model struct {
+// Program Model/state
+type Model struct {
   directories []db.Directory // The directories in the list
   cursor int // Cursor position
   err error
@@ -25,7 +25,13 @@ func (e errMsg) Error() string{ return e.err.Error() } // TODO: Why is this smar
 
 // Creates an empty model
 func NewModel() tea.Model {
-  return model{}
+  return Model{
+    selected: db.Directory{},
+  }
+}
+
+func (m Model) SelectedDir() db.Directory {
+  return m.selected
 }
 
 // TODO: Try to pass the InitialModel to the init function. Change to small initialModel()
@@ -44,11 +50,11 @@ func getDirectories() tea.Msg {
   return dirMsg(directories)
 }
 
-func (m model) Init() tea.Cmd {
+func (m Model) Init() tea.Cmd {
   return getDirectories
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
   switch msg := msg.(type) {
   case dirMsg:
     m.directories = msg
@@ -78,14 +84,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
   return m, nil
 }
 
-func (m model) View() string {
+func (m Model) View() string {
   if m.err != nil {
     return fmt.Sprintf("\nWe had some trouble: %v\n\n", m.err)
   }
 
-  if (m.selected != db.Directory{}) {
-    return fmt.Sprintln(m.selected.Path)
-  }
+  // TODO: https://github.com/charmbracelet/bubbletea/issues/860
+  // if (m.selected != db.Directory{}) {
+  //   // return fmt.Sprintln(m.selected.Path)
+  //   return ""
+  // }
 
   s := "Which directory would you like to navigate to?\n\n"
 
