@@ -11,8 +11,10 @@ import (
   "github.com/spf13/cobra"
 )
 
+var pathsOnly bool
+
 var listDirectoriesCmd = &cobra.Command{
-  Use:   "listDirs",
+  Use:   "list",
   Short: "Prints the DB directories table to stdout",
   Run: func(cmd *cobra.Command, args []string) {
     d, err := db.OpenDatabase()
@@ -27,15 +29,21 @@ var listDirectoriesCmd = &cobra.Command{
     }
 
     for _, d := range directories {
-      fmt.Printf("\nID: %v\nPath: %s\nRecurse: %v\nLastNavigation: %v\nTimesNavigated: %v\n", d.ID,
-                                                                                              d.Path,
-                                                                                              d.Recurse,
-                                                                                              d.LastNavigation,
-                                                                                              d.TimesNavigated)
+      if pathsOnly {
+        fmt.Println(d.Path)
+      } else {
+        fmt.Printf("\nID: %v\nPath: %s\nRecurse: %v\nLastNavigation: %v\nTimesNavigated: %v\n", d.ID,
+                                                                                                d.Path,
+                                                                                                d.Recurse,
+                                                                                                d.LastNavigation,
+                                                                                                d.TimesNavigated)
+      }
     }
   },
 }
 
 func init() {
   rootCmd.AddCommand(listDirectoriesCmd)
+
+  listDirectoriesCmd.Flags().BoolVarP(&pathsOnly, "print-paths", "p", false, "Prints only the paths")
 }
