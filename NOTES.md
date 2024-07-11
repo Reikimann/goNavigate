@@ -1,6 +1,6 @@
 # Note to self
 Links regarding TUI rendering:
-- https://github.com/charmbracelet/bubbletea/issues/860
+- https://github.com/charmbracelet/bubbletea/issues/860 (See the last to comments to fix coloring with lipgloss and termenv)
 - https://github.com/junegunn/fzf/issues/3741
 - https://github.com/junegunn/fzf/wiki/Language-bindings
 
