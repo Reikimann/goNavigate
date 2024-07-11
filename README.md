@@ -1,4 +1,4 @@
-# goNavigate
+# goNavigate (WIP)
 
 goNavigate is a CLI application, written in Go, that allows a user to add
 directories to a list and quickly navigate them using fuzzy search.
