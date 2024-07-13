@@ -37,6 +37,10 @@ directories to a list and quickly navigate them using fuzzy search.`,
     }
 
     if m, ok := finalModel.(tui.Model); ok {
+      if !m.DBContainsDirs() {
+        return
+      }
+
       fmt.Println(m.SelectedDir().Path)
     } else {
       fmt.Println("Failed to assert model type")

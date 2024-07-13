@@ -1,4 +1,7 @@
 # Note to self
+No need to look at this mess. It's just my noobish notes xD
+
+## TUI rendering
 Links regarding TUI rendering:
 - https://github.com/charmbracelet/bubbletea/issues/860 (See the last to comments to fix coloring with lipgloss and termenv)
 - https://github.com/junegunn/fzf/issues/3741
@@ -37,3 +40,6 @@ Im trying this out
       os.Exit(1)
     }
 ```
+
+## Exit codes makes terminal quit
+When returning exit codes the terminal closes. Investigate further.

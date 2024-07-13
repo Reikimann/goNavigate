@@ -11,8 +11,10 @@ import (
 type Model struct {
   directories []db.Directory // The directories in the list
   cursor int // Cursor position
+  selected db.Directory // The selected directory
+
   err error
-  selected db.Directory
+  dbEmpty bool
 }
 
 type (
@@ -32,6 +34,10 @@ func NewModel() tea.Model {
 
 func (m Model) SelectedDir() db.Directory {
   return m.selected
+}
+
+func (m Model) DBContainsDirs() bool {
+  return len(m.directories) != 0
 }
 
 // TODO: Try to pass the InitialModel to the init function. Change to small initialModel()
@@ -58,6 +64,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
   switch msg := msg.(type) {
   case dirMsg:
     m.directories = msg
+
+    // TODO: Somehow make this into a msg isEmptyMsg
+    if len(m.directories) == 0 {
+      m.dbEmpty = true
+      return m, tea.Quit
+    }
     return m, nil
   case errMsg:
     m.err = msg
@@ -89,11 +101,10 @@ func (m Model) View() string {
     return fmt.Sprintf("\nWe had some trouble: %v\n\n", m.err)
   }
 
-  // TODO: https://github.com/charmbracelet/bubbletea/issues/860
-  // if (m.selected != db.Directory{}) {
-  //   // return fmt.Sprintln(m.selected.Path)
-  //   return ""
-  // }
+  // TODO: Figure out how to show this in a screen and make the user press q to quit
+  if m.dbEmpty {
+    return fmt.Sprintln("You haven't added any directories yet. Please check the help command.")
+  }
 
   s := "Which directory would you like to navigate to?\n\n"
 

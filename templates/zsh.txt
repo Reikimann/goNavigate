@@ -1,7 +1,13 @@
 # Jump to a directory using interactive search.
 function __goNavigate_g() {
     \builtin local result
-    result="$(\command goNavigate)" && __goNavigate_cd "${result}"
+    result="$(\command goNavigate)"
+
+    if [[ -n $result ]]; then
+      __goNavigate_cd "${result}"
+    else
+      return
+    fi
 }
 
 # cd

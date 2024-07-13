@@ -4,16 +4,18 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package db
 
 import (
-  "database/sql"
-  "log"
-  "os"
-  "fmt"
-  // "time"
-  "path/filepath"
+	"database/sql"
+	"errors"
+	"fmt"
+	"log"
+	"os"
 
-  "github.com/adrg/xdg"
-  "github.com/mattn/go-sqlite3"
-  _ "github.com/mattn/go-sqlite3"
+	// "time"
+	"path/filepath"
+
+	"github.com/adrg/xdg"
+	"github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Directory struct {
@@ -45,19 +47,28 @@ func setupDataPath() string {
 }
 
 func OpenDatabase() (*dirDB, error) {
-  dataPath := setupDataPath()
+  dataDir := setupDataPath()
+  dbPath := filepath.Join(dataDir, "goNavigate.db")
 
-  database, err := sql.Open("sqlite3", filepath.Join(dataPath, "goNavigate.db"))
+  // Creates the database if it doesn't exist
+  if _, err := os.Stat(dbPath); errors.Is(err, os.ErrNotExist) {
+    if err := initDB(dataDir); err != nil {
+      return nil, err
+    }
+  }
+
+  database, err := sql.Open("sqlite3", dbPath)
   if err != nil {
     return nil, err
   }
-  db := dirDB{database, dataPath}
+  db := dirDB{database, dataDir}
 
   return &db, nil
 }
 
 
-func (d *dirDB) InitDB() {
+// Creates the database in the given directory `dataPath`
+func initDB(dataDir string) error {
   initStatement := `
   CREATE TABLE IF NOT EXISTS directories (
     id INTEGER PRIMARY KEY,
@@ -66,13 +77,20 @@ func (d *dirDB) InitDB() {
     last_navigation INTEGER DEFAULT 0,
     times_navigated INTEGER DEFAULT 0
   );`
+  dbPath := filepath.Join(dataDir, "goNavigate.db")
 
-  _, err := d.Database.Exec(initStatement)
+  database, err := sql.Open("sqlite3", dbPath)
   if err != nil {
-    log.Fatalf("%q: %s\n", err, initStatement)
+    return err
+  }
+  defer database.Close()
+
+  _, err = database.Exec(initStatement)
+  if err != nil {
+    return err
   }
 
-  log.Println("Directory database created!")
+  return nil
 }
 
 
