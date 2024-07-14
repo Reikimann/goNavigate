@@ -4,18 +4,18 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package db
 
 import (
-	"database/sql"
-	"errors"
-	"fmt"
-	"log"
-	"os"
+  "database/sql"
+  "errors"
+  "fmt"
+  "log"
+  "os"
 
-	// "time"
-	"path/filepath"
+  // "time"
+  "path/filepath"
 
-	"github.com/adrg/xdg"
-	"github.com/mattn/go-sqlite3"
-	_ "github.com/mattn/go-sqlite3"
+  "github.com/adrg/xdg"
+  "github.com/mattn/go-sqlite3"
+  _ "github.com/mattn/go-sqlite3"
 )
 
 type Directory struct {
@@ -23,6 +23,7 @@ type Directory struct {
   Path           string
   Recurse        bool
   LastNavigation uint64
+  // TODO: Use the correct sqlite time (Unixtime)
   // LastNavigation time.Time
   TimesNavigated uint
 }

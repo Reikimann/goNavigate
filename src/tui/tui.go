@@ -1,10 +1,12 @@
 package tui
 
 import (
-  "fmt"
+	// "fmt"
+	"strings"
 
-  "github.com/Reikimann/goNavigate/src/db"
-  tea "github.com/charmbracelet/bubbletea"
+	"github.com/Reikimann/goNavigate/src/db"
+	"github.com/Reikimann/goNavigate/src/utils"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // Program Model/state
@@ -14,11 +16,13 @@ type Model struct {
   selected db.Directory // The selected directory
 
   err error
-  dbEmpty bool
+  dbEmpty bool // If the DB empty
+  quitting bool // If the program is to quit
 }
 
 type (
-  dirMsg []db.Directory
+  dirMsg []db.Directory // This msg holds the directories from the DB
+  dirEmptyMsg struct{} // This msg conveys that the DB is empty
   errMsg struct{ err error }
 )
 
@@ -40,7 +44,6 @@ func (m Model) DBContainsDirs() bool {
   return len(m.directories) != 0
 }
 
-// TODO: Try to pass the InitialModel to the init function. Change to small initialModel()
 func getDirectories() tea.Msg {
   d, err := db.OpenDatabase()
   if err != nil {
@@ -53,6 +56,9 @@ func getDirectories() tea.Msg {
     return errMsg{err}
   }
 
+  if len(directories) == 0 {
+    return dirEmptyMsg{}
+  }
   return dirMsg(directories)
 }
 
@@ -62,32 +68,33 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
   switch msg := msg.(type) {
-  case dirMsg:
-    m.directories = msg
-
-    // TODO: Somehow make this into a msg isEmptyMsg
-    if len(m.directories) == 0 {
-      m.dbEmpty = true
-      return m, tea.Quit
-    }
-    return m, nil
   case errMsg:
     m.err = msg
     return m, tea.Quit
+  case dirEmptyMsg:
+    m.dbEmpty = true
+    return m, tea.Quit
+  case dirMsg:
+    m.directories = msg
+    return m, nil
   case tea.KeyMsg:
     switch msg.String() {
-    case "ctrl+c", "q", "esc":
+    case "ctrl+c", "esc":
+      m.quitting = true
       return m, tea.Quit
     case "up", "k", "ctrl+k":
       if m.cursor > 0 {
         m.cursor--
+      } else {
+        m.cursor = len(m.directories) - 1
       }
     case "down", "j", "ctrl+j":
       if m.cursor < len(m.directories) - 1 {
         m.cursor++
+      } else {
+        m.cursor = 0
       }
     case "enter":
-      // TODO: Handle navigating to the directory
       m.selected = m.directories[m.cursor]
       return m, tea.Quit
     }
@@ -97,29 +104,43 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
+  var b strings.Builder
+
   if m.err != nil {
-    return fmt.Sprintf("\nWe had some trouble: %v\n\n", m.err)
+    b.WriteString("\nWe had some trouble: " + m.err.Error() + "\n\n")
+    return b.String()
   }
 
   // TODO: Figure out how to show this in a screen and make the user press q to quit
   if m.dbEmpty {
-    return fmt.Sprintln("You haven't added any directories yet. Please check the help command.")
+    b.WriteString("You haven't added any directories yet. Please check the help command.")
+    return b.String()
   }
 
-  s := "Which directory would you like to navigate to?\n\n"
+  // Return not printing TUI if a directory has been selected or the program is to shut down
+  if m.selected != (db.Directory{}) || m.quitting {
+    return b.String()
+  }
+
+  // TODO: Add a border around the path selection
+  b.WriteString("Which directory would you like to navigate to?\n\n")
 
   for i, choice := range m.directories {
     cursor := " "
 
-    // Is the cursor pointing at this choice?
+    // TODO: Make the line highlighted (lib lipgloss)
     if m.cursor == i {
       cursor = ">"
     }
 
-    // Render the row
-    s += fmt.Sprintf("%s %s\n", cursor, choice.Path)
+    // Strips the /home/user/ from a given path.
+    path, err := utils.DirPathStripHome(choice.Path)
+    if err != nil {
+      b.WriteString(" " + cursor + " " + choice.Path + "\n")
+    } else {
+      b.WriteString(" " + cursor + " " + path + "\n")
+    }
   }
 
-  s += "\nPress q to quit.\n"
-  return s
+  return b.String()
 }

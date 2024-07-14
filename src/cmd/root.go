@@ -4,13 +4,10 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-  "fmt"
   "os"
 
-  "github.com/Reikimann/goNavigate/src/tui"
-  tea "github.com/charmbracelet/bubbletea"
+  goNav "github.com/Reikimann/goNavigate/src"
 
-  // "github.com/rivo/tview"
   "github.com/spf13/cobra"
 )
 
@@ -22,30 +19,7 @@ var rootCmd = &cobra.Command{
 goNavigate is a CLI application, written in Go, that allows a user to add
 directories to a list and quickly navigate them using fuzzy search.`,
   Run: func(cmd *cobra.Command, args []string) {
-    // See NOTES.md
-    tty, err := os.OpenFile("/dev/tty", os.O_WRONLY, 0)
-    if err != nil {
-      panic(err)
-    }
-    defer tty.Close()
-
-    p := tea.NewProgram(tui.NewModel(), tea.WithOutput(tty))
-    finalModel, err := p.Run()
-    if err != nil {
-      fmt.Printf("There has been an error: %v", err)
-      os.Exit(1)
-    }
-
-    if m, ok := finalModel.(tui.Model); ok {
-      if !m.DBContainsDirs() {
-        return
-      }
-
-      fmt.Println(m.SelectedDir().Path)
-    } else {
-      fmt.Println("Failed to assert model type")
-      os.Exit(1)
-    }
+    goNav.Run()
   },
 }
 

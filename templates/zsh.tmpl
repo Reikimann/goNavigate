@@ -4,7 +4,7 @@ function __goNavigate_g() {
     result="$(\command goNavigate)"
 
     if [[ -n $result ]]; then
-      __goNavigate_cd "${result}"
+      __goNavigate_cd "$result"
     else
       return
     fi
