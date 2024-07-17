@@ -14,11 +14,12 @@ import (
 // The cmdString for quickly navigating using the shell scripts
 var cmdString string
 
+// The shouldSetCmd controls wether the g command should be defined
+var noCmd bool
+
 var initCmd = &cobra.Command{
-  Use:   "init [shellName]",
+  Use:   "init <shellName>",
   Short: "Generate shell configuration",
-  // Args: cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-  // ValidArgs: []string{"zsh", "bash"},
   Args: func(cmd *cobra.Command, args []string) error {
     if len(args) != 1 {
       return fmt.Errorf("requires exactly one argument")
@@ -31,8 +32,12 @@ var initCmd = &cobra.Command{
   Run: func(cmd *cobra.Command, args []string) {
     shell, _ := goNav.IsValidShell(args[0])
 
-    opts := goNav.Opts{
-      Cmd: cmdString,
+    var opts goNav.Opts
+
+    if noCmd {
+      opts = goNav.Opts{ Cmd: "", }
+    } else {
+      opts = goNav.Opts{ Cmd: cmdString }
     }
 
     goNav.RenderShellFuncs(shell, opts)
@@ -42,5 +47,6 @@ var initCmd = &cobra.Command{
 func init() {
   rootCmd.AddCommand(initCmd)
 
-  initCmd.Flags().StringVar(&cmdString, "cmd", "g", "Changes the prefix of the `g` command [default: g]")
+  initCmd.Flags().StringVar(&cmdString, "cmd", "g", "Changes the prefix of the `g` command.")
+  initCmd.Flags().BoolVar(&noCmd, "no-cmd", false, "Prevents goNavigate from defining the g command.")
 }

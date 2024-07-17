@@ -16,8 +16,19 @@ function __goNavigate_cd() {
     \builtin cd -- "$@"
 }
 
-\builtin alias {{.Cmd}}=__goNavigate_g
+# =============================================================================
+#
+# Commands for zoxide. Disable these using --no-cmd.
+#
 
+{{ if (ne .Cmd "") }}
+\builtin alias {{.Cmd}}=__goNavigate_g
+{{ else }}
+# -- not configured --
+{{ end }}
+
+# =============================================================================
+#
 # To initialize goNavigate, add the following to your configuration (usually ~/.zshrc):
 #
 # eval "$(goNavigate init zsh)"
