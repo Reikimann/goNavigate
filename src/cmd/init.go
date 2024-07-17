@@ -23,13 +23,19 @@ var initCmd = &cobra.Command{
     if len(args) != 1 {
       return fmt.Errorf("requires exactly one argument")
     }
-    if !goNav.IsValidShell(args[0]) {
+    if _, valid := goNav.IsValidShell(args[0]); !valid {
       return fmt.Errorf("invalid shell name: %s. Allowed values are: zsh.", args[0])
     }
     return nil
   },
   Run: func(cmd *cobra.Command, args []string) {
-    goNav.Render(args[0], cmdString)
+    shell, _ := goNav.IsValidShell(args[0])
+
+    opts := goNav.Opts{
+      Cmd: cmdString,
+    }
+
+    goNav.RenderShellFuncs(shell, opts)
   },
 }
 

@@ -16,7 +16,7 @@ function __goNavigate_cd() {
     \builtin cd -- "$@"
 }
 
-\builtin alias g=__goNavigate_g
+\builtin alias {{.Cmd}}=__goNavigate_g
 
 # To initialize goNavigate, add the following to your configuration (usually ~/.zshrc):
 #
