@@ -14,6 +14,19 @@ to a list and quickly navigate them using fuzzy search.
 </div>
 
 ## Getting started
+<!-- TODO: Add demo video -->
+<!-- TODO: Add string below, when recursive the navigate function works
+goNavigate add dir1 -r         # Adds the directory to dir-list and marks it as recursive (TODO: Explain recursive dirs)
+-->
+
+```sh
+goNavigate add directory       # Adds the directory to the directory list
+goNavigate add dir1 dir2 dirN  # Adds multiple directories to the dir-list
+
+g                              # View dir-list and navigate to selected directory
+goNavigate                     # View dir-list and print selected directory to STDOUT
+```
+
 
 ## Installation
 GoNavigate is installed in just 2 steps:
@@ -31,7 +44,7 @@ To start using goNavigate, add it to your shell.
 <details>
 <summary>Zsh</summary>
 
-> Add this to the <ins>**end**<ins> of your config file (usually `~/.zshrc` or `~/.config/zsh/.zshrc`):
+> Add this to the <ins>**end**</ins> of your config file (usually `~/.zshrc`):
 > ```sh
 > eval $(goNavigate init zsh)
 > ```
