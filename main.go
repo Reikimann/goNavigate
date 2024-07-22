@@ -5,7 +5,6 @@ package main
 
 import (
   "github.com/Reikimann/goNavigate/src/cmd"
-  // goNavigate "github.com/Reikimann/goNavigate/src"
 )
 
 func main() {

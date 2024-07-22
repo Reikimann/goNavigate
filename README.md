@@ -63,3 +63,14 @@ When calling the command `goNavigate init`, the following flags are available:
 - `--no-cmd`
     - Prevents goNavigate from defining the `g` command.
     - The function `__goNavigate_g` will still be available in your shell as, should you choose to alias or keybind it.
+
+# Special Thanks
+
+**[Zoxide]** - *For showing how to organize code and use templating to initialize shell functions*
+
+
+
+
+<!------------------------------------{ Thanks }------------------------------------>
+
+[Zoxide]: https://github.com/ajeetdsouza/zoxide
