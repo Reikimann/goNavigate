@@ -1,6 +1,9 @@
 # Note to self
 No need to look at this mess. It's just my noobish notes xD
 
+## Fuzzy filtering
+- https://github.com/sahilm/fuzzy
+
 ## TUI rendering
 Links regarding TUI rendering:
 - https://github.com/charmbracelet/bubbletea/issues/860 (See the last to comments to fix coloring with lipgloss and termenv)
